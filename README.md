@@ -3,28 +3,42 @@ Little python utility to provide the text needed for /etc/lxc/#ctid.conf, /etc/s
 
 **credit|thanks**: much of the code taken/adapted from [ddimick's proxmox-lxc-idmapper](https://github.com/ddimick/proxmox-lxc-idmapper)
 
+
+
 As used below: 
 - lxc_uid = container user id
 - lxc_gid = container group id
 - host_uid = host (proxmox) user id
 - host_gid = host (proxmox) group id
+
+<br>
   
 
 <h2>Syntax</h2>
 
-usage: `lxc_idmap_v2.py [-h] [-u [USER]] [-g [GROUP]] [lxc_uid[:lxc_gid][=host_uid[:host_gid]] ...]`
 
-<b>All arguments can be used as many times as needed, but must include the -u/-g flag for each flagged argument.</b>
+
+<b>usage:</b> `lxc_idmap_v2.py [-h] [-u [USER]] [-g [GROUP]] [lxc_uid[:lxc_gid][=host_uid[:host_gid]] ...]`
+<br>
+
+
+All arguments can be <b>used as many times as needed</b>, but must include the -u/-g flag for each flagged argument.
 
 Ex. `-u 1000 1234 -g 1000` != `-u 1000 -u 1234 -g 1000`  
 Note: above is still valid syntax, but the `1234` will be interpretted as unflagged arg, i.e. -> `1234:1234=1234:1234`
 
-<em>Don't duplicate use of the same id</em>, I don't have any handling to skip over that, so the config will be invalid...
 
+
+<em>Don't duplicate use of the same id</em>, I don't have any handling to skip over that (yet), so the config will be invalid...
+
+
+<br>
 
 <h3>UID|GID Mappings (no flag args)</h3>
 
 `lxc_uid[:lxc_gid][=host_uid[:host_gid]]` (no flag)
+<br>
+
 
 - *Only the container user's id `<lxc_uid>` is required.*
 - if no container group id `<lxc_gid>` then it will be set to the user id
@@ -33,12 +47,13 @@ Note: above is still valid syntax, but the `1234` will be interpretted as unflag
   - As such: `./lxc_idmapper 1000` is equivalent to `./lxc_idmapper 1000=1000`  
 - if no host group id is provided, it will be set to the container group id.
   - As such: `./lxc_idmapper 1000:1234` is equivalent to `./lxc_idmapper 1000:1234=1000:1234`
-
+<br>
 - Separate multiple id mappings with a `<space>`
  
 <h2>Flagged Arguments</h2>
+<br>
 Sometimes this behavior of creating a group id mapping for every user id mapping (or vice versa) is undesired. Utilize the -u/--user and -g/--group to limit mapping to only the user or group identified. 
-
+<br>
 <h3>-u | --user</h3>
 
 Usage: `-u lxc_id` or `--user lxc_id=host_id`
@@ -49,6 +64,7 @@ Similar to above, in that only the container id is required. If not provided, th
 Usage: `-g lxc_id` or `--group lxc_id=host_id`
 Similar to above, in that only the container id is required. If not provided, the host id will default to the same value of the container id. 
 
+<br>
 <h2>Example Usage and Output</h2>
 
 ```bash
