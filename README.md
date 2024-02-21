@@ -1,6 +1,8 @@
 # lxc_idmap_v2
 Little python utility to provide the text needed for /etc/lxc/<ctid>.conf, /etc/subuid, and /etc/subgid to map user and group ids mappings for unprivileged lxcs.
 
+**credit|thanks**: much of the code taken/adapted from [ddimick's proxmox-lxc-idmapper](https://github.com/ddimick/proxmox-lxc-idmapper)
+
 As used below: 
 - lxc_uid = container user id
 - lxc_gid = container group id
