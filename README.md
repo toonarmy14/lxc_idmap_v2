@@ -104,16 +104,16 @@ root:213:1
 ```
 
 ```bash
-./lxc_idmap_v2 1000:564=812 -u 444=1230 -g 909 -g 7777
+/lxc_idmap_v2 564:564=812 -u 444=1230 -g 909 -g 7777
 
 # Add to /etc/pve/lxc/<container_id>.conf:
 lxc.idmap: u 0 100000 444
 lxc.idmap: u 444  1230 1
-lxc.idmap: u 445  100445 555
-lxc.idmap: u 1000  812 1
-lxc.idmap: u 1001 101001  64535
+lxc.idmap: u 445  100445 119
+lxc.idmap: u 564  812 1
+lxc.idmap: u 565 100565  64971
 lxc.idmap: g 0 100000 564
-lxc.idmap: g 564  812 1
+lxc.idmap: g 564  564 1
 lxc.idmap: g 565  100565 344
 lxc.idmap: g 909  909 1
 lxc.idmap: g 910  100910 6867
@@ -125,7 +125,7 @@ root:1230:1
 root:812:1
 
 # Add to /etc/subgid:
-root:812:1
+root:564:1
 root:909:1
 root:7777:1
 ```
