@@ -50,7 +50,7 @@ Similar to above, in that only the container id is required. If not provided, th
 <h2>Example Usage and Output</h2>
 
 ```bash
-./lxc_idmap_v2 1000 # equivalent to ./lxc_idmap_v2 1000:1000 or ./lxc_idmap_v2 1000:1000=1000:1000
+./lxc_idmap_v2.py 1000 # equivalent to ./lxc_idmap_v2 1000:1000 or ./lxc_idmap_v2 1000:1000=1000:1000
 
 # Add to /etc/pve/lxc/<container_id>.conf:
 lxc.idmap: u 0 100000 1000
@@ -68,7 +68,7 @@ root:1000:1
 ```
 
 ```bash
-./lxc_idmap_v2 1000:9876
+./lxc_idmap_v2.py 1000:9876
 
 # Add to /etc/pve/lxc/<container_id>.conf:
 lxc.idmap: u 0 100000 1000
@@ -86,7 +86,7 @@ root:9876:1
 ```
 
 ```bash
-./lxc_idmap_v2 1000:567=990:213
+./lxc_idmap_v2.py 1000:567=990:213
 
 # Add to /etc/pve/lxc/<container_id>.conf:
 lxc.idmap: u 0 100000 1000
@@ -104,7 +104,7 @@ root:213:1
 ```
 
 ```bash
-/lxc_idmap_v2 564:564=812 -u 444=1230 -g 909 -g 7777
+/lxc_idmap_v2.py 564:564=812 -u 444=1230 -g 909 -g 7777
 
 # Add to /etc/pve/lxc/<container_id>.conf:
 lxc.idmap: u 0 100000 444
