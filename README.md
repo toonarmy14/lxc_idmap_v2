@@ -1,5 +1,5 @@
-# lxc_idmapper
-Little python script to provide the <ctid>.conf, /etc/subuid, and /etc/subgid mappings for unprivileged lxcs.
+# lxc_idmap_v2
+Little python utility to provide the text needed for /etc/lxc/<ctid>.conf, /etc/subuid, and /etc/subgid to map user and group ids mappings for unprivileged lxcs.
 
 As used below: 
 - lxc_uid = container user id
