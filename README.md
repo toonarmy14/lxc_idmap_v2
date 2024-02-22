@@ -16,20 +16,35 @@ As used below:
 
 <h2>Syntax</h2>
 
+<b>usage:</b> `lxc_idmap_v2.py [-h] [-u UID[=h_UID]] [-g GID[=h_GID]] [-ug UID[:GID][=[h_UID][:h_GID]]]`
 
-
-<b>usage:</b> `lxc_idmap_v2.py [-h] [-u [USER]] [-g [GROUP]] [lxc_uid[:lxc_gid][=host_uid[:host_gid]] ...]`
 <br>
 
+<h3>-u, --user = <u>lxc_UID</u></h3>
 
-All arguments can be <b>used as many times as needed</b>, but must include the -u/-g flag for each flagged argument.
+<u>lxc_UID</u>
 
-Ex. `-u 1000 1234 -g 1000` != `-u 1000 -u 1234 -g 1000`  
-Note: above is still valid syntax, but the `1234` will be interpretted as unflagged arg, i.e. -> `1234:1234=1234:1234`
+Ex. `-u 1000 1234 -g 1000` --> invalid  |  `-u 1000 -u 1234 -g 1000`  --> valid
+
+<em>Note: if you use the _old version of the code, the first example is valid syntax (as it allows positional arguments), but its behavior might not match expectations. The `1234` would not be interpreted as a second -u/--user arg, but instead as a positional arg and interpretted as `1234:1234=1234:1234` (old syntax) or the equivalent `-u 1234 -g 1234` or `-ug 1234` (new syntax)</em>
 
 
+> [!NOTE]
+> All arguments can be <b>used as many times as needed</b>, but each argument must be preceded by the appropriate flag. 
 
-<em>Don't duplicate use of the same id</em>, I don't have any handling to skip over that (yet), so the config will be invalid...
+<!--
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+-->
 
 
 <br>
