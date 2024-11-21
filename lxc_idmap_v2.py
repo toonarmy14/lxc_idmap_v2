@@ -31,81 +31,73 @@ def create_argparser():
     return parser.parse_args()
 
 def validate_ids(user_ids, group_ids):
-    min = 1
-    max = 65536
+    _min = 1 # mapping to root user (uid=0) is not allowed
+    _max = 65536
     for lxc_id, host_id in user_ids:
-        if not min <= lxc_id <= max:
-            raise argparse.ArgumentTypeError(f'UID {lxc_id} is not in range {min}-{max}')
-        elif not min <= host_id <= max:
-            raise argparse.ArgumentTypeError(f'UID {host_id} is not in range {min}-{max}')
+        if not _min <= lxc_id <= _max:
+            raise argparse.ArgumentTypeError(f'UID {lxc_id} is not in range {_min}-{_max}')
+        elif not _min <= host_id <= _max:
+            raise argparse.ArgumentTypeError(f'UID {host_id} is not in range {_min}-{_max}')
             
     for lxc_id, host_id in group_ids:
-        if not min <= lxc_id <= max:
-            raise argparse.ArgumentTypeError(f'UID {lxc_id} is not in range {min}-{max}')
-        elif not min <= host_id <= max:
-            raise argparse.ArgumentTypeError(f'UID {host_id} is not in range {min}-{max}')
+        if not _min <= lxc_id <= _max:
+            raise argparse.ArgumentTypeError(f'UID {lxc_id} is not in range {_min}-{_max}')
+        elif not _min <= host_id <= _max:
+            raise argparse.ArgumentTypeError(f'UID {host_id} is not in range {_min}-{_max}')
     
-def create_id_lists(args):
+def create_id_lists(args:argparse.Namespace):
     # init empty lists to hold user and group ids
-    
     user_ids, group_ids = [],[]
     
+    # convert each id mappings into two (lxc_id, host_id) tuples and append to user and group id lists
     for mapping in args.mappings:
-        if '=' in mapping:
-                lxc_ids = mapping.split('=')[0]
-                host_ids = mapping.split('=')[1]
-        else:
-            # set both lxc and host ids to mapping argument
-            lxc_ids = host_ids = mapping
+        lxc_ids = mapping.split('=')[0]
+        host_ids = mapping.split('=')[-1]
         
-        if ':' in lxc_ids:
-            lxc_uid = lxc_ids.split(':')[0]
-            lxc_gid = lxc_ids.split(':')[1]
-        else:
-            # no group id passed. set to same value as user id
-            lxc_uid = lxc_gid = lxc_ids
+        lxc_uid = lxc_ids.split(':')[0]
+        lxc_gid = lxc_ids.split(':')[-1]
         
         # same splitting behavior for host_ids
-        if ':' in host_ids:
-            host_uid = host_ids.split(':')[0]
-            host_gid = host_ids.split(':')[1]
-        else:
-            # no group id passed. set to same value as user id
-            host_uid = host_ids
-            host_gid = lxc_gid
+        host_uid = host_ids.split(':')[0]
+        host_gid = host_ids.split(':')[-1]
         
         user_ids.append((int(lxc_uid), int(host_uid)))
         group_ids.append((int(lxc_gid), int(host_gid)))
         
-    
+    # add user mappings specified by -u/--user
     for user_mapping in args.user:
-        lxc_uid = user_mapping.split('=')[0]
-        host_uid = user_mapping.split('=')[-1]
-        user_ids.append((int(lxc_uid), int(host_uid)))
+        user_ids.append(
+                (int(user_mapping.split('=')[0]), 
+                 int(user_mapping.split('=')[-1]))
+        )
         
+    # add group mappings specified by -g/--group
     for group_mapping in args.group:
-        lxc_gid = group_mapping.split('=')[0]
-        host_gid = group_mapping.split('=')[-1]
-        group_ids.append((int(lxc_gid), int(host_gid)))
+        group_ids.append(
+                (int(group_mapping.split('=')[0]), 
+                 int(group_mapping.split('=')[-1]))
+        )
     
     validate_ids(user_ids, group_ids)
     # sort ids in increasing order and return
     return sorted(user_ids, key=lambda x: x[0]), sorted(group_ids, key=lambda x: x[0])
 
 def create_idmaps(ids: list[tuple[int,int]], kind:str):
+    # changed k,v delimeter to `=` to be in line with lxc documentation. Calling `lxc-start` directly will fail if using `:` (as
     output = ''
     for idx, (lxc_id, host_id) in enumerate(ids):
         if idx == 0:
-            output += f"lxc.idmap: {kind} 0 100000 {lxc_id}\n"
+            output += f"lxc.idmap = {kind} 0 100000 {lxc_id}\n"
         else:
             prev_id = ids[idx - 1][0]
-            output += f"lxc.idmap: {kind} {prev_id + 1}  {prev_id + 100001} {(lxc_id - 1) - prev_id}\n"
+            output += f"lxc.idmap = {kind} {prev_id + 1}  {prev_id + 100001} {(lxc_id - 1) - prev_id}\n"
         
-        output += f"lxc.idmap: {kind} {lxc_id}  {host_id} 1\n"
+        output += f"lxc.idmap = {kind} {lxc_id}  {host_id} 1\n"
     
     last_id = ids[-1][0]
-    output += f'lxc.idmap: {kind} {last_id + 1} {last_id + 100001}  {65535 - last_id}\n'
+    output += f'lxc.idmap = {kind} {last_id + 1} {last_id + 100001}  {65535 - last_id}\n'
     return output
+
 
 def create_conf_content(user_ids, group_ids):
     conf_content = "\n# Add to /etc/pve/lxc/<container_id>.conf:\n"
